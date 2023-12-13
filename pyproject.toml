@@ -15,6 +15,7 @@ pandas = "^2.1.4"
 sqlalchemy = "^2.0.23"
 openpyxl = "^3.1.2"
 python-dotenv = "^1.0.0"
+httpx = "^0.25.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.3"
@@ -38,4 +39,12 @@ exclude = [".git", ".pytest_cache", "tests", "__pycache__", "env", "venv", ".ven
 max-line-length = 90
 max-complexity = 8
 ignore = ["W503"]
+
+[tool.pytest.ini_options]
+testpaths = "tests"
+python_files = "test_*.py"
+python_functions = "test_*"
+python_classes = "Test* *Tests"
+addopts = "-vv -x"
+pythonpath = ["."]
 
