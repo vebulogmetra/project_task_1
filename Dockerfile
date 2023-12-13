@@ -21,7 +21,7 @@ RUN poetry config virtualenvs.create false \
 
 COPY . /app
 
-COPY ddl.sql /docker-entrypoint-initdb.d/
+COPY ddl_pg.sql /docker-entrypoint-initdb.d/
 
 CMD ["python", "."]
 
