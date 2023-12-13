@@ -1,6 +1,7 @@
 from fastapi import FastAPI, status
+
 from src.app.views import router as main_router
-from src.config.settings import APP_TITLE, APP_API_PREFIX
+from src.config.settings import APP_API_PREFIX, APP_TITLE
 
 app = FastAPI(title=APP_TITLE, docs_url="/docs", redoc_url=None)
 app.include_router(router=main_router, prefix=APP_API_PREFIX)

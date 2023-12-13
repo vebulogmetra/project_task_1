@@ -1,12 +1,13 @@
-from fastapi import APIRouter, Depends, File, UploadFile, status, HTTPException
-from sqlalchemy.orm import Session
-from src.app import crud
 from datetime import datetime
-from src.utils.parser import file_to_db, db_to_file
-from src.app.schemas import ImportDTO, DataValueGet, StatusMsg
+
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from pydantic import ValidationError
-import pandas as pd
+from sqlalchemy.orm import Session
+
+from src.app import crud
+from src.app.schemas import DataValueGet, ImportDTO, StatusMsg
 from src.utils.database import get_db
+from src.utils.parser import db_to_file, file_to_db
 
 router = APIRouter()
 

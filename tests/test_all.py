@@ -1,6 +1,8 @@
-from fastapi.testclient import TestClient
-from main import app
 import os
+
+from fastapi.testclient import TestClient
+
+from main import app
 from src.config import settings
 
 base_api_url = settings.APP_API_PREFIX
