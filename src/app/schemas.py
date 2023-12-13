@@ -30,5 +30,5 @@ class DataValueGet(DataValueDTO):
 
 
 class StatusMsg(BaseModel):
-    status: int
+    status: str
     detail: str

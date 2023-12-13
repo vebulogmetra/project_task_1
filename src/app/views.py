@@ -19,7 +19,7 @@ def import_file(file_: UploadFile = File(...), db_session: Session = Depends(get
 
     file_to_db(db_session=db_session, file_obj=file_, import_id=new_import.import_id)
 
-    return StatusMsg(status=201, detail="File import successful")
+    return StatusMsg(status="ok", detail=f"Import id = {new_import.import_id}")
 
 
 @router.get("/export_file/{import_id}/", response_model=StatusMsg)
@@ -36,4 +36,4 @@ def export_file(import_id: int, db_session: Session = Depends(get_db)):
 
     filename: str = db_to_file(data=data, import_id=import_id)
 
-    return StatusMsg(status=200, detail=f"Filename: {filename}")
+    return StatusMsg(status="ok", detail=f"Filename: {filename}")
