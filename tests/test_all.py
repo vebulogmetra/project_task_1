@@ -14,7 +14,7 @@ client = TestClient(app)
 
 
 def test_import_file(db):
-    with open("example.xlsx", "rb") as file:
+    with open("tests/example.xlsx", "rb") as file:
         response = client.post(import_file_url, files={"file_": ("test_file.csv", file)})
         assert response.status_code == 200
 
