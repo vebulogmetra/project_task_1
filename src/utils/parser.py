@@ -38,7 +38,9 @@ def file_to_db(db_session: Session, file_obj: UploadFile, import_id: int) -> Non
 
 def db_to_file(data: list[DataValueGet], import_id: int) -> str:
     records = []
+    dates = []
     for vd in data:
+        dates.append(vd.plan_date.strftime("%Y-%m-%d %H:%M:%S"))
         temp_dict = {
             "Код": vd.project_rel.project_code,
             "Наименование проекта": vd.project_rel.project_name,
@@ -47,12 +49,7 @@ def db_to_file(data: list[DataValueGet], import_id: int) -> str:
         temp_dict[f"{vd.fact_date}_факт"] = vd.fact_value
         records.append(temp_dict)
     df = pd.DataFrame(records)
-
-    # Пока такой способ преобразовать из Decimal()
-    for col in df.columns[2:]:
-        df[col] = df[col].apply(
-            lambda x: float(str(x).lstrip("[").rstrip("]")) if x else 0
-        )
+    dates = set(dates)
 
     df_grouped = (
         df.groupby(["Код", "Наименование проекта"])
@@ -60,9 +57,17 @@ def db_to_file(data: list[DataValueGet], import_id: int) -> str:
         .reset_index()
     )
 
+    # Пока такой способ преобразовать из Decimal()
+    for col in df_grouped.columns[2:]:
+        df_grouped[col] = df_grouped[col].apply(
+            lambda x: float(str(x).lstrip("[").rstrip("]")) if x else 0
+        )
+
     print(df_grouped)
 
     filename = f"file_version_{import_id}.xlsx"
-    df_grouped.to_excel(filename, index=False)
+    df_grouped.to_excel(
+        excel_writer=filename, sheet_name="data", float_format="%.4f", index=False
+    )
 
     return filename
