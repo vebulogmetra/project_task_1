@@ -33,6 +33,6 @@ def export_file(import_id: int, db_session: Session = Depends(get_db)):
         print(f"PARSE MODEL ERROR: {e}")
         raise HTTPException(status_code=500, detail="Internav server error")
 
-    filename: str = db_to_file(data=data)
+    filename: str = db_to_file(data=data, import_id=import_id)
 
     return StatusMsg(status=200, detail=f"Filename: {filename}")
