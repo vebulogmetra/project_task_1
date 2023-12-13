@@ -3,10 +3,8 @@ services:
   db:
     image: postgres:15-alpine
     restart: always
-    environment:
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: 123
-      POSTGRES_DB: mydb
+    env_file:
+      - ./src/config/.env
     volumes:
       - postgres_data:/var/lib/postgresql/data/
       - ./ddl_pg.sql:/docker-entrypoint-initdb.d/ddl_pg.sql
@@ -23,11 +21,6 @@ services:
       - "5000:5000"
     depends_on:
       - db
-    environment:
-      DB_HOST: db
-      DB_USER: myuser
-      DB_PASSWORD: 123
-      DB_NAME: mydb
 
 
 volumes:
