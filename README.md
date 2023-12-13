@@ -25,6 +25,10 @@
 
 Для запуска без Docker и с sqlite установите в /config/settings.py файле DOCKERIZE=False DEVELOPMENT=True
 ```shell
+   sed -i 's/DOCKERIZE=True/DOCKERIZE=False/' src/config/settings.py && \
+   sed -i 's/DEVELOPMENT=False/DEVELOPMENT=True/' src/config/settings.py
+```
+```shell
    poetry install
 ```
 ```shell
