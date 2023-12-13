@@ -2,49 +2,37 @@ from fastapi import APIRouter, Depends, File, UploadFile, status, HTTPException
 from sqlalchemy.orm import Session
 from src.app import crud
 from datetime import datetime
-from src.utils.parser import process_file
-from src.app.schemas import ImportDTO
+from src.utils.parser import file_to_db, db_to_file
+from src.app.schemas import ImportDTO, DataValueGet, StatusMsg
+from pydantic import ValidationError
 import pandas as pd
+from src.utils.database import get_db
 
 router = APIRouter()
 
 
-@router.post("/import_file/")
-def import_file(
-    file_: UploadFile = File(...), db_session: Session = Depends(crud.get_db)
-):
-    """ """
-
+@router.post("/import_file/", response_model=StatusMsg)
+def import_file(file_: UploadFile = File(...), db_session: Session = Depends(get_db)):
     import_data = ImportDTO(import_date=datetime.now(), file_name=file_.filename)
     new_import = crud.create_import(db=db_session, import_data=import_data)
 
-    process_file(db_session=db_session, file_obj=file_, import_id=new_import.import_id)
+    file_to_db(db_session=db_session, file_obj=file_, import_id=new_import.import_id)
 
-    return status.HTTP_201_CREATED
+    return StatusMsg(status=201, detail="File import successful")
 
 
-@router.get("/export_file/{import_id}/")
-def export_file(import_id: int, db_session: Session = Depends(crud.get_db)):
-    data = crud.get_import_data(db=db_session, import_id=import_id)
-    if not data:
-        raise HTTPException(
-            status_code=404, detail="Data for the specified version not found"
-        )
-    records = []
-    for _, datavalue in data:
-        temp_dict = {
-            "Код": datavalue.project_rel.project_code,
-            "Наименование проекта": datavalue.project_rel.project_name,
-        }
+@router.get("/export_file/{import_id}/", response_model=StatusMsg)
+def export_file(import_id: int, db_session: Session = Depends(get_db)):
+    db_data = crud.get_import_data(db=db_session, import_id=import_id)
+    if not db_data:
+        raise HTTPException(status_code=404, detail="Data for the import_id not found")
 
-        temp_dict[f"{datavalue.plan_date} план"] = datavalue.plan_value
-        temp_dict[f"{datavalue.fact_date} факт"] = datavalue.fact_value
-        records.append(temp_dict)
-    df = pd.DataFrame(records)
+    try:
+        data = [DataValueGet.model_validate(d) for d in db_data]
+    except ValidationError as e:
+        print(f"PARSE MODEL ERROR: {e}")
+        raise HTTPException(status_code=500, detail="Internav server error")
 
-    print(df)
+    filename: str = db_to_file(data=data)
 
-    filename = f"file_version_{import_id}.xlsx"
-    df.to_excel(filename, index=False)
-
-    return {"filename": filename}
+    return StatusMsg(status=200, detail=f"Filename: {filename}")
