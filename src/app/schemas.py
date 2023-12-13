@@ -1,5 +1,5 @@
-from pydantic import BaseModel
-from typing import Optional
+from pydantic import BaseModel, ConfigDict
+from typing import Optional, Any
 from datetime import datetime
 
 
@@ -20,3 +20,14 @@ class DataValueDTO(BaseModel):
     plan_value: float
     fact_date: datetime
     fact_value: float
+
+
+class DataValueGet(DataValueDTO):
+    model_config = ConfigDict(from_attributes=True)
+    import_rel: Optional[Any] = None
+    project_rel: Optional[Any] = None
+
+
+class StatusMsg(BaseModel):
+    status: int
+    detail: str
