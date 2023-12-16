@@ -1,4 +1,5 @@
 ## Описание проекта
+API для загрузки / выгрузки данных в виде excel файла.
 Проект разработан с использованием [Python](https://www.python.org/) и [FastAPI](https://fastapi.tiangolo.com/).
 
 ## Установка и настройка
